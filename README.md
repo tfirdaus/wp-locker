@@ -1,6 +1,6 @@
 # WP-Locker (Beta)
 
-**WP-Locker**, stands for "WordPress Local Docker", is a Docker configuration to set up a localhost enviroment WordPress site development. It is based on the [WP-Docklines](https://github.com/tfirdaus/wp-docklines) image thus it includes tools and utilities that are commonly required for WordPress development such as [PHPUnit](https://phpunit.de/), [PHPCS](https://github.com/squizlabs/PHP_CodeSniffer), and [WordPress Coding Standards](https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards).
+**WP-Locker**, stands for "WordPress Local Docker", is a Docker configuration to set up a localhost environment for WordPress site development. It is based on the [WP-Docklines](https://github.com/tfirdaus/wp-docklines) image thus it includes tools and utilities that are commonly required for WordPress development such as [PHPUnit](https://phpunit.de/), [PHPCS](https://github.com/squizlabs/PHP_CodeSniffer), and [WordPress Coding Standards](https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards).
 
 ## Requirements
 
@@ -33,6 +33,20 @@ bin/init
 ```
 
 The site should now be available at `http://localhost:8082`.
+
+## Import and Export Database
+
+If you'd like to import a database, put it inside the `dump` directory in `wp-locker` directory. Then run the following command; replace the {{ database-name }} with the SQL filename given.
+
+```
+bin/mysql-import dump/{{ database-name }}.sql
+```
+
+Run the following command to export the WordPress database. The file will be available inside the `dump` directory.
+
+```
+bin/mysql-export
+```
 
 ## Stopping Containers
 
