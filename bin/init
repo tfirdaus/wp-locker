@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# Initialize a project (installing plugins, dependencies, and WordPress)
+source "$(dirname "$0")/shared"
+
+# Get environment variables.
+export $(egrep -v '^#' .env | xargs)
+
+# Install WordPress Core
+if ! $(run wp core is-installed &>/dev/null); then
+	
+	# ========================================================================================================================
+	# NOTE: The command may throw an error even though we have added --skip-email parameter. But I guess we can just ignore it.
+	# https://github.com/wp-cli/core-command/blob/f302ad901aa119136684610f91087c592503150b/features/core.feature#L349
+	# It might also throw an error if the site have `mu-plugins` active.
+	# ========================================================================================================================
+	
+	echo "🔄 Installing WordPress Core."
+	run wp core install \
+		--title=${WORDPRESS_SITE_TITLE:-\"WordPress\"} \
+		--admin_user=${WORDPRESS_SITE_USER:-admin} \
+		--admin_password=${WORDPRESS_SITE_PASSWORD:-password} \
+		--admin_email=${WORDPRESS_SITE_EMAIL:-admin@localhost} \
+		--url=${WORDPRESS_SITE_URL:-localhost} \
+		--skip-email \
+		--color
+else
+	echo "✅ WordPress Core already installed."
+fi
+
+# Get the list of WordPress Plugins and install it in the container.
+IFS=',' read -ra wp_plugins <<< "$WORDPRESS_PLUGINS"
+if [[ ${wp_plugins[@]} ]]; then
+	wpackagists=()
+	wp_plugins_activate=()
+	for wp_plugin in "${wp_plugins[@]}"; do
+		# TODO: Make this fully compatible with wp-cli syntax to speed up the initialization yet still allow caching.
+		if ! $(run wp plugin is-installed $wp_plugin); then
+			wpackagists+=("wpackagist-plugin/$wp_plugin")
+		fi
+		wp_plugins_activate+=("$wp_plugin")
+	done
+	
+	if [[ ${wpackagists[@]} ]]; then
+		echo "📦 Installing WordPress plugin.";
+		run composer require "${wpackagists[@]}" --prefer-dist --no-suggest --no-interaction
+	else
+		echo "👍🏻 WordPress plugin already installed.";
+	fi
+	
+	run wp plugin activate "${wp_plugins_activate[@]}"
+else
+	echo "❎ No WordPress plugin to install."
+fi

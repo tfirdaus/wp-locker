@@ -1,0 +1,21 @@
+#!/bin/bash
+export TIMESTAMP=$(date +"%Y-%m-%d_%H:%M:%S")
+
+# Get the WordPress variables.
+while IFS= read -r line; do
+	export $(echo -e "$line" | sed -e 's/[[:space:]]*$//' -e "s/'//g")
+done < <(cat .env | grep DB_)
+
+echo "📤 Exporting the '${DB_NAME}' database."
+echo "📦 Generating dump/${DB_NAME}-${TIMESTAMP}.sql."
+
+# Make sure the '/data' directory exist to store the database dump
+mkdir -p data
+docker-compose exec database mysqldump --opt \
+    -h ${DB_HOST%:*} \
+    -P${DB_HOST#*:} \
+    -u ${DB_USER} \
+    -p${DB_PASSWORD} \
+    ${DB_NAME} \
+    > dump/${DB_NAME}-${TIMESTAMP}.sql
+echo "👌🏼 Done!"

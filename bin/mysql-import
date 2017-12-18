@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [ -z "$*" ]; then
+    echo "⚠️ The SQL file path is a required parameter"
+else
+	export TIMESTAMP=$(date +"%Y-%m-%d_%H:%M:%S")
+
+	while IFS= read -r line; do
+		# Get the WordPress variables.
+		export $(echo -e "$line" | sed -e 's/[[:space:]]*$//' -e "s/'//g")
+	done < <(cat .env | grep DB_)
+
+    echo "📥 Importing into the '${DB_NAME}' database"
+    docker-compose exec database mysql \
+        --default-character-set=utf8mb4 \
+        -u${DB_USER} \
+        -p${DB_PASSWORD} \
+        ${DB_NAME} \
+        < "$@"
+
+    echo "👌🏼 Done!"
+fi

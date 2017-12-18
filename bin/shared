@@ -1,0 +1,17 @@
+#!/bin/bash
+
+run() {
+    docker-compose exec -u www-data wordpress $@
+}
+
+run_root() {
+	docker-compose exec wordpress $@
+}
+
+ssh() {
+	docker-compose exec -u www-data wordpress sh
+}
+
+ssh_root() {
+	docker-compose exec wordpress sh
+}
