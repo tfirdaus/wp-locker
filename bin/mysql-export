@@ -1,5 +1,5 @@
 #!/bin/bash
-export TIMESTAMP=$(date +"%Y-%m-%d_%H:%M:%S")
+export TIMESTAMP=$(date +"%Y-%m-%d-%H%M%S")
 
 # Get the WordPress variables.
 while IFS= read -r line; do

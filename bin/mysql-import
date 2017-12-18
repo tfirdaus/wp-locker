@@ -3,8 +3,6 @@
 if [ -z "$*" ]; then
     echo "⚠️ The SQL file path is a required parameter"
 else
-	export TIMESTAMP=$(date +"%Y-%m-%d_%H:%M:%S")
-
 	while IFS= read -r line; do
 		# Get the WordPress variables.
 		export $(echo -e "$line" | sed -e 's/[[:space:]]*$//' -e "s/'//g")
