@@ -51,3 +51,6 @@ if [[ ${wp_plugins[@]} ]]; then
 else
 	echo "❎ No WordPress plugin to install."
 fi
+
+echo "🔎 Verifying the site URLs."
+replace_urls ${WORDPRESS_SITE_URL_HTTPS:-$WORDPRESS_SITE_URL_HTTP}
