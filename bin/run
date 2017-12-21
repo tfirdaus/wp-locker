@@ -1,4 +1,7 @@
 #!/bin/bash
 source "$(dirname "$0")/shared"
 
+# Show a fancy banner \o/
+banner
+
 run $@
