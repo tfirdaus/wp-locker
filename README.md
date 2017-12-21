@@ -46,7 +46,7 @@ bin/mysql-import dump/{{ database-name }}.sql
 
 Run the following command to export the WordPress database. The file will be available inside the `dump` directory.
 
-> **NOTE**: Replace the `{{ database-name }}`` with the filename given. This process may take a while (perhaps, some minutes to almost an hour) to complete. However, If the process is hanging or unreasonably too long, you might be better to terminate the operation and import the database through an app like [Sequel Pro](https://github.com/tfirdaus/wp-locker/wiki/Using-Sequel-Pro) or [Navicat for Windows](https://www.navicat.com/en/products).
+> **NOTE**: Replace the `{{ database-name }}` with the filename given. This process may take a while (perhaps, some minutes to almost an hour) to complete. However, If the process is hanging or unreasonably too long, you might be better to terminate the operation and import the database through an app like [Sequel Pro](https://github.com/tfirdaus/wp-locker/wiki/Using-Sequel-Pro) or [Navicat for Windows](https://www.navicat.com/en/products).
 
 ```
 bin/mysql-export
