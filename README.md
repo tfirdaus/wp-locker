@@ -23,7 +23,7 @@ git clone https://github.com/tfirdaus/wp-locker.git && cd wp-locker
 Run the following command to build the containers up and running.
 
 ```
-bin/up
+bin/up -d
 ```
 
 Run the the following command to initialize the localhost; installing WordPress Core with the default configuration in `.env` file and installing the required plugins.

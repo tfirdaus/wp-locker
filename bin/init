@@ -2,8 +2,24 @@
 # Initialize a project (installing plugins, dependencies, and WordPress)
 source "$(dirname "$0")/shared"
 
+# Show a fancy banner \o/
+banner
+
 # Get environment variables.
 export $(egrep -v '^#' .env | xargs)
+
+# Determine the site URL.
+WORDPRESS_SITE_URL_HTTP="http://${WORDPRESS_SITE_URL}:${WORDPRESS_SITE_PORT}"
+for i in "$@"; do
+	case $i in
+	    --https)
+	    WORDPRESS_SITE_URL_HTTPS="https://${WORDPRESS_SITE_URL}:${WORDPRESS_SITE_PORT_HTTPS}"
+	    shift
+	    ;;
+	    *)
+	    ;;
+	esac
+done
 
 # Install WordPress Core
 if ! $(run wp core is-installed &>/dev/null); then
@@ -20,7 +36,7 @@ if ! $(run wp core is-installed &>/dev/null); then
 		--admin_user=${WORDPRESS_SITE_USER:-admin} \
 		--admin_password=${WORDPRESS_SITE_PASSWORD:-password} \
 		--admin_email=${WORDPRESS_SITE_EMAIL:-admin@localhost} \
-		--url=${WORDPRESS_SITE_URL:-localhost} \
+		--url=${WORDPRESS_SITE_URL_HTTPS:-$WORDPRESS_SITE_URL_HTTP} \
 		--skip-email \
 		--color
 else
@@ -51,3 +67,6 @@ if [[ ${wp_plugins[@]} ]]; then
 else
 	echo "❎ No WordPress plugin to install."
 fi
+
+echo "🔎 Verifying the site URLs."
+replace_urls ${WORDPRESS_SITE_URL_HTTPS:-$WORDPRESS_SITE_URL_HTTP}

@@ -15,3 +15,32 @@ ssh() {
 ssh_root() {
 	docker-compose exec wordpress sh
 }
+
+replace_urls() {
+
+	regex='(http|https)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
+
+	if [[ $1 =~ $regex ]]; then
+		CURRENT_SITEURL=$(run wp option get siteurl)
+		CURRENT_SITEURL_ESC=$(echo -e "$CURRENT_SITEURL" | sed -e 's/[[:space:]]*$//' -e "s/'//g")
+		if [[ "$1" != "$CURRENT_SITEURL_ESC" ]]; then
+			echo "🔄 Replacing the site URLs in the database to $1."
+			run wp search-replace "$CURRENT_SITEURL_ESC" "$1" --precise --recurse-objects --all-tables --skip-themes --skip-plugins
+		else
+			echo "👌🏼 Done!"
+		fi
+	elif [[ -z "$1" ]]; then
+		echo "⛔️ No URL supplied."
+	fi
+}
+
+banner() {
+	cat <<-'EOF'
+    _       ______        __    ____  ________ __ __________
+   | |     / / __ \      / /   / __ \/ ____/ //_// ____/ __ \
+   | | /| / / /_/ /_____/ /   / / / / /   / ,<  / __/ / /_/ /
+   | |/ |/ / ____/_____/ /___/ /_/ / /___/ /| |/ /___/ _, _/
+   |__/|__/_/         /_____/\____/\____/_/ |_/_____/_/ |_|
+
+	EOF
+}
