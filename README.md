@@ -54,7 +54,7 @@ bin/mysql-export
 
 ## Stopping Containers
 
-If you've done with the development, run the following command to stop containers and removes containers, networks, volumes, and images created by the `bin/up` command.
+If you've done with the development, run the following command to stop containers and removes containers, networks, volumes, and images created by the `bin/up -d` command.
 
 ```
 bin/down
