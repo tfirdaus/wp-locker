@@ -20,13 +20,7 @@ Clone this repository; this following command will clone it to a new directory n
 git clone https://github.com/tfirdaus/wp-locker.git && cd wp-locker
 ```
 
-Run the following command to build the containers up and running.
-
-```
-bin/up -d
-```
-
-Run the following command to initialize the localhost; installing WordPress Core with the default configuration in the `.env` file and installing the required plugins.
+Run the following command to initialize the localhost; building the containers up, installing WordPress Core with the default configuration in the `.env` file, installing the plugins from [WordPress.org repository](https://wordpress.org/plugins/) as well as the specified [Github](https://github.com/) or [Bitbucket](https://bitbucket.org/) repositories.
 
 ```
 bin/init
@@ -36,7 +30,7 @@ The site should now be available at `http://localhost:8082`.
 
 > **NOTE**: Change the URL port number accordingly following the `WORDPRESS_PORT` or the `WORDPRESS_PORT_HTTPS`, if you're aiming to load the site with HTTPS, variable in the `.env`.
 
-## Importing and Exporting the Database
+## Importing and Exporting Database
 
 If you'd like to import a database, put it inside the `dump` directory in `wp-locker` directory. Then run the following command; replace the `{{ database-name }}` with the SQL filename given.
 
