@@ -70,4 +70,7 @@ fi
 install_git_repo $PROJECTS_GITHUB_PLUGINS --clone-dir=wp-content/plugins
 install_git_repo $PROJECTS_GITHUB_THEMES --clone-dir=wp-content/themes
 
+install_git_repo $PROJECTS_BITBUCKET_PLUGINS --source=bitbucket --clone-dir=wp-content/plugins
+install_git_repo $PROJECTS_BITBUCKET_PLUGINS --source=bitbucket --clone-dir=wp-content/themes
+
 replace_urls ${WORDPRESS_SITE_URL_HTTPS:-$WORDPRESS_SITE_URL}
