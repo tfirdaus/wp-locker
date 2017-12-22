@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# Initialize a project (installing plugins, dependencies, and WordPress)
+source "$(dirname "$0")/shared"
+
+# Get environment variables.
+export $(egrep -v '^#' .env | xargs)
+
+# Determine the site URL.
+WORDPRESS_SITE_URL="http://${WORDPRESS_SITE_DOMAIN}:${WORDPRESS_PORT}"
+for i in "$@"; do
+	case $i in
+	    --https)
+	    WORDPRESS_SITE_URL_HTTPS="https://${WORDPRESS_SITE_DOMAIN}:${WORDPRESS_PORT_HTTPS}"
+	    shift
+	    ;;
+	esac
+done
+
+# Show a fancy banner \o/
+banner
+
+# Install WordPress Core
+if ! $(run wp core is-installed &>/dev/null); then
+
+	# ========================================================================================================================
+	# NOTE: The command may throw an error even though we have added --skip-email parameter. But I guess we can just ignore it.
+	# https://github.com/wp-cli/core-command/blob/f302ad901aa119136684610f91087c592503150b/features/core.feature#L349
+	# It might also throw an error if the site have `mu-plugins` active.
+	# ========================================================================================================================
+
+	echo "🔄 Installing WordPress Core."
+	run wp core install \
+		--title=${WORDPRESS_SITE_TITLE:-\"WordPress\"} \
+		--url=${WORDPRESS_SITE_URL_HTTPS:-$WORDPRESS_SITE_URL} \
+		--admin_user=${WORDPRESS_ADMIN_USER:-admin} \
+		--admin_password=${WORDPRESS_ADMIN_PASSWORD:-password} \
+		--admin_email=${WORDPRESS_ADMIN_EMAIL:-admin@localhost.local} \
+		--skip-email
+fi
+
+install_wp plugin "$WORDPRESS_PLUGINS"
+install_wp theme "$WORDPRESS_THEMES"
+
+install_git_repo "$PROJECTS_GITHUB_PLUGINS" --dest=wp-content/plugins
+install_git_repo "$PROJECTS_GITHUB_THEMES" --dest=wp-content/themes
+install_git_repo "$PROJECTS_BITBUCKET_PLUGINS" --source=bitbucket --dest=wp-content/plugins
+install_git_repo "$PROJECTS_BITBUCKET_THEMES" --source=bitbucket --dest=wp-content/themes
+
+replace_urls "${WORDPRESS_SITE_URL_HTTPS:-$WORDPRESS_SITE_URL}"

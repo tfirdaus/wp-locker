@@ -17,12 +17,11 @@ ssh_root() {
 }
 
 replace_urls() {
-	echo "🔎 Verifying the site URLs."
 
 	regex='(http|https)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
 	if [[ $1 =~ $regex ]]; then
-		SITEURL=$(run wp option get siteurl)
-		SITEURL_ESC=$(echo -e "$SITEURL" | sed -e 's/[[:space:]]*$//' -e "s/'//g")
+		local SITEURL=$(run wp option get siteurl)
+		local SITEURL_ESC=$(echo -e "$SITEURL" | sed -e 's/[[:space:]]*$//' -e "s/'//g")
 	else
 		echo "⛔️ URL is not valid or supplied."
 	fi
@@ -30,8 +29,39 @@ replace_urls() {
 	if [[ ! -z $SITEURL_ESC ]] && [[ "$1" != "$SITEURL_ESC" ]]; then
 		echo "🔄 Replacing the site URLs in the database to $1."
 		run wp search-replace "$SITEURL_ESC" "$1" --precise --recurse-objects --all-tables --skip-themes --skip-plugins
-	else
-		echo "👌🏼 Done!"
+	fi
+}
+
+install_wp() {
+	if [ $# -lt 2 ]; then
+		echo "usage: $0 <plugin|theme> <list-of-plugins|theme>"
+	fi
+
+	if [[ "$1" = "plugin" ]] || [[ "$1" = "theme" ]]; then
+
+		local PLUGINS_INSTALLED=()
+
+		# Install WordPress plugins
+		IFS=',' read -ra WP_REPOS <<< "$2"
+		if [[ ${WP_REPOS[@]} ]]; then
+			for WP_REPO in "${WP_REPOS[@]}"; do
+				if ! $(run wp $1 is-installed $WP_REPO) && [[ "$1" = "plugin" ]]; then
+					PLUGINS_INSTALLED+=("$WP_REPO")
+				fi
+
+				if ! $(run wp $1 is-installed $WP_REPO) && [[ "$1" = "theme" ]] && [[ -z $THEME_INSTALLED ]]; then
+					local THEME_INSTALLED=$WP_REPO
+				fi
+			done
+
+			if [[ ${PLUGINS_INSTALLED[@]} ]]; then
+				run_root wp plugin install "${PLUGINS_INSTALLED[@]}" --activate --allow-root
+			fi
+
+			if [[ "$1" = "theme" ]] && [[ ! -z $THEME_INSTALLED ]]; then
+				run_root wp theme install $THEME_INSTALLED --activate --allow-root
+			fi
+		fi
 	fi
 }
 
@@ -42,17 +72,17 @@ install_git_repo() {
 		exit 1
 	fi
 
-	GIT_REPOS=$1
+	local GIT_REPOS=$1
 
 	for i in "${@:2}"; do
 		case $i in
 			--source=*)
 			if [[ ${i#*=} = "bitbucket" ]]; then
-				REPO_BASEURL=https://bitbucket.org/
+				local REPO_BASEURL=https://bitbucket.org/
 			fi
 			shift;;
-			--clone-dir=*)
-				REPO_CLONE_DIR=${i#*=}
+			--dest=*)
+				local REPO_DEST=${i#*=}
 			shift;;
 		esac
 	done
@@ -60,20 +90,22 @@ install_git_repo() {
 	IFS=',' read -ra repositories <<< "$GIT_REPOS"
 	if [[ ${repositories[@]} ]]; then
 		# Ensure the directory is there.
-		mkdir -p ${REPO_CLONE_DIR:-wp-content} && cd ${REPO_CLONE_DIR:-wp-content}
+		mkdir -p ${REPO_DEST:-wp-content} && cd ${REPO_DEST:-wp-content}
 
 		# Loop through it.
 		for repo in "${repositories[@]}"; do
-			echo "📦 Cloning '${repo%:*}' to '${REPO_CLONE_DIR:-wp-content}/${repo#*:}'."
-			git clone ${REPO_BASEURL:-https://github.com/}${repo%:*}.git ${repo#*:}
+			local REPO_DIR=$(echo $repo | cut -d'/' -f2 | cut -d':' -f2)
+			if [[ -z "$(ls -A ${REPO_DIR:-})" ]]; then
+				echo "Cloning '${repo%:*}' to '${REPO_DEST:-wp-content}/${REPO_DIR:-}'."
+				git clone ${REPO_BASEURL:-https://github.com/}${repo%:*}.git ${REPO_DIR:-}
+			fi
 		done
 		cd - &>/dev/null
-	else
-		echo "❎ No Git repository to clone. The --source parameter might no be specified."
 	fi
 }
 
 banner() {
+    if [[ -z $NOBANNER ]]; then
 	cat <<-'EOF'
   _       ______        __    ____  ________ __ __________
  | |     / / __ \      / /   / __ \/ ____/ //_// ____/ __ \
@@ -84,4 +116,5 @@ banner() {
     Repository: https://github.com/tfirdaus/wp-locker
 
 	EOF
+    fi
 }
