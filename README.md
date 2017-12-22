@@ -20,13 +20,7 @@ Clone this repository; this following command will clone it to a new directory n
 git clone https://github.com/tfirdaus/wp-locker.git && cd wp-locker
 ```
 
-Run the following command to build the containers up and running.
-
-```
-bin/up -d
-```
-
-Run the the following command to initialize the localhost; installing WordPress Core with the default configuration in `.env` file and installing the required plugins.
+Run the the following command to initialize the localhost; building the containers up, installing WordPress Core with the default configuration in `.env` file, installing the plugins from [WordPress.org repository](https://wordpress.org/plugins/) as well as the specified [Github](https://github.com/) or [Bitbucket](https://bitbucket.org/) repositories.
 
 ```
 bin/init
