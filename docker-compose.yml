@@ -43,3 +43,4 @@ services:
       - PMA_HOST=${DATABASE_HOST}
 volumes:
   mysql:
+  wp-plugins:
