@@ -17,20 +17,24 @@ ssh_root() {
 }
 
 replace_urls() {
+	echo "🔎 Verifying the site URLs."
 
 	regex='(http|https)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
-
 	if [[ $1 =~ $regex ]]; then
-		CURRENT_SITEURL=$(run wp option get siteurl)
-		CURRENT_SITEURL_ESC=$(echo -e "$CURRENT_SITEURL" | sed -e 's/[[:space:]]*$//' -e "s/'//g")
-		if [[ "$1" != "$CURRENT_SITEURL_ESC" ]]; then
-			echo "🔄 Replacing the site URLs in the database to $1."
-			run wp search-replace "$CURRENT_SITEURL_ESC" "$1" --precise --recurse-objects --all-tables --skip-themes --skip-plugins
-		else
-			echo "👌🏼 Done!"
-		fi
-	elif [[ -z "$1" ]]; then
-		echo "⛔️ No URL supplied."
+		SITEURL=$(run wp option get siteurl)
+		SITEURL_ESC=$(echo -e "$SITEURL" | sed -e 's/[[:space:]]*$//' -e "s/'//g")
+	else
+		echo "⛔️ URL is not valid or supplied."
+	fi
+
+	if [[ ! -z $SITEURL_ESC ]] && [[ "$1" != "$SITEURL_ESC" ]]; then
+		echo "🔄 Replacing the site URLs in the database to $1."
+		run wp search-replace "$SITEURL_ESC" "$1" --precise --recurse-objects --all-tables --skip-themes --skip-plugins
+	else
+		echo "👌🏼 Done!"
+	fi
+}
+
 install_git_repo() {
 	# Don't bother proceeding if the `git` command is not present.
 	if [[ ! `which git` ]]; then
