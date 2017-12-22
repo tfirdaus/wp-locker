@@ -31,6 +31,41 @@ replace_urls() {
 		fi
 	elif [[ -z "$1" ]]; then
 		echo "⛔️ No URL supplied."
+install_git_repo() {
+	# Don't bother proceeding if the `git` command is not present.
+	if [[ ! `which git` ]]; then
+		echo "⛔️ Cannot clone Git repositories. Git is not installed on your system."
+		exit 1
+	fi
+
+	GIT_REPOS=$1
+
+	for i in "${@:2}"; do
+		case $i in
+			--source=*)
+			if [[ ${i#*=} = "bitbucket" ]]; then
+				REPO_BASEURL=https://bitbucket.org/
+			fi
+			shift;;
+			--clone-dir=*)
+				REPO_CLONE_DIR=${i#*=}
+			shift;;
+		esac
+	done
+
+	IFS=',' read -ra repositories <<< "$GIT_REPOS"
+	if [[ ${repositories[@]} ]]; then
+		# Ensure the directory is there.
+		mkdir -p ${REPO_CLONE_DIR:-wp-content} && cd ${REPO_CLONE_DIR:-wp-content}
+
+		# Loop through it.
+		for repo in "${repositories[@]}"; do
+			echo "📦 Cloning '${repo%:*}' to '${REPO_CLONE_DIR:-wp-content}/${repo#*:}'."
+			git clone ${REPO_BASEURL:-https://github.com/}${repo%:*}.git ${repo#*:}
+		done
+		cd - &>/dev/null
+	else
+		echo "❎ No Git repository to clone. The --source parameter might no be specified."
 	fi
 }
 
