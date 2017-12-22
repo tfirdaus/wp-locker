@@ -10,14 +10,14 @@ else
 	while IFS= read -r line; do
 		# Get the WordPress variables.
 		export $(echo -e "$line" | sed -e 's/[[:space:]]*$//' -e "s/'//g")
-	done < <(cat .env | grep DB_)
+	done < <(cat .env | grep DATABASE_)
 
-    echo "📥 Importing into the '${DB_NAME}' database"
+    echo "📥 Importing into the '${DATABASE_NAME}' database"
     docker-compose exec database mysql \
         --default-character-set=utf8mb4 \
-        -u${DB_USER} \
-        -p${DB_PASSWORD} \
-        ${DB_NAME} \
+        -u${DATABASE_USER} \
+        -p${DATABASE_PASSWORD} \
+        ${DATABASE_NAME} \
         < "$@"
 
     echo "👌🏼 Done!"

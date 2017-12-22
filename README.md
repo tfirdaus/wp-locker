@@ -34,7 +34,7 @@ bin/init
 
 The site should now be available at `http://localhost:8082`.
 
-> **NOTE**: Change the URL port number accordingly following THE `WORDPRESS_SITE_PORT_HTTPS` variable in the `.env`.
+> **NOTE**: Change the URL port number accordingly following the `WORDPRESS_PORT` or the `WORDPRESS_PORT_HTTPS`, if you're aiming to load the site with HTTPS, variable in the `.env`.
 
 ## Import and Export Database
 
