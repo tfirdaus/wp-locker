@@ -26,7 +26,7 @@ Run the following command to build the containers up and running.
 bin/up -d
 ```
 
-Run the the following command to initialize the localhost; installing WordPress Core with the default configuration in `.env` file and installing the required plugins.
+Run the following command to initialize the localhost; installing WordPress Core with the default configuration in the `.env` file and installing the required plugins.
 
 ```
 bin/init
@@ -36,7 +36,7 @@ The site should now be available at `http://localhost:8082`.
 
 > **NOTE**: Change the URL port number accordingly following the `WORDPRESS_PORT` or the `WORDPRESS_PORT_HTTPS`, if you're aiming to load the site with HTTPS, variable in the `.env`.
 
-## Import and Export Database
+## Importing and Exporting the Database
 
 If you'd like to import a database, put it inside the `dump` directory in `wp-locker` directory. Then run the following command; replace the `{{ database-name }}` with the SQL filename given.
 
