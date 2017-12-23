@@ -26,29 +26,7 @@ Run the following command to initialize the localhost; building the containers u
 bin/init
 ```
 
-The site should now be available at `http://localhost:8082`.
-
-> **NOTE**: Change the URL port number accordingly following the `WORDPRESS_PORT` or the `WORDPRESS_PORT_HTTPS`, if you're aiming to load the site with HTTPS, variable in the `.env`.
-
-## Importing and Exporting Database
-
-If you'd like to import a database, put it inside the `dump` directory in `wp-locker` directory. Then run the following command; replace the `{{ database-name }}` with the SQL filename given.
-
-```
-bin/mysql-import dump/{{ database-name }}.sql
-```
-
-Run the following command to export the WordPress database. The file will be available inside the `dump` directory.
-
-> **NOTE**: Replace the `{{ database-name }}` with the filename given. This process may take a while (perhaps, some minutes to almost an hour) to complete. However, If the process is hanging or unreasonably too long, you might be better to terminate the operation and import the database through an app like [Sequel Pro](https://github.com/tfirdaus/wp-locker/wiki/Using-Sequel-Pro) or [Navicat for Windows](https://www.navicat.com/en/products).
-
-```
-bin/mysql-export
-```
-
-## Stopping Containers
-
-If you've done with the development, run the following command to stop containers and removes containers, networks, volumes, and images created by the `bin/up -d` command.
+The site should now be available at `http://localhost:8082` unless you've changed the `WORDPRESS_DOMAIN` or `WORDPRESS_PORT` value in the `.env` file. If you've done with the development, you can turn the localhost of by running the following command; it will stop the containers, the networks, the volumes, and the images created upon initialization.
 
 ```
 bin/down
@@ -61,3 +39,21 @@ bin/up -d
 ```
 
 You can browse the site again at `http://localhost:8082`.
+
+## Managing the Database
+
+You can view and manage the database through [phpMyAdmin](https://www.phpmyadmin.net/). By default, it should be available at `http://localhost:9082`.
+
+In addition, a couple of utility script is included to import and export the database. If you'd like to import a database, put it inside the `dump` directory in the `wp-locker` directory, and run the following command; replace the `{{ database-name }}` with the SQL filename given.
+
+```
+bin/mysql-import dump/{{ database-name }}.sql
+```
+
+Run the following command to export the database. The file will be available inside the `dump` directory.
+
+> **NOTE**: Replace the `{{ database-name }}` with the filename given. This process may take a while (perhaps, some minutes to almost an hour) to complete. However, If the process is hanging or unreasonably too long, you might be better to terminate the operation and import the database through an app like [Sequel Pro](https://github.com/tfirdaus/wp-locker/wiki/Using-Sequel-Pro) or [Navicat for Windows](https://www.navicat.com/en/products).
+
+```
+bin/mysql-export
+```
