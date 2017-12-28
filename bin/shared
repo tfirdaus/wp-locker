@@ -1,11 +1,11 @@
 #!/bin/bash
 
 run() {
-    docker-compose exec -u www-data wordpress $@
+    docker-compose exec -u www-data wordpress "$@"
 }
 
 run_root() {
-	docker-compose exec wordpress $@
+	docker-compose exec wordpress "$@"
 }
 
 ssh() {
@@ -16,69 +16,72 @@ ssh_root() {
 	docker-compose exec wordpress sh
 }
 
-replace_urls() {
+banner() {
+	if [[ ${WP_LOCKER_BANNER:-1} -ge 1 ]]; then
+	cat <<-'EOF'
 
-	regex='(http|https)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
-	if [[ $1 =~ $regex ]]; then
-		local SITEURL=$(run wp option get siteurl)
-		local SITEURL_ESC=$(echo -e "$SITEURL" | sed -e 's/[[:space:]]*$//' -e "s/'//g")
-	else
-		echo "⛔️ URL is not valid or supplied."
-	fi
+	# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+	#    _       ______        __    ____  ________ __ __________   #
+	#   | |     / / __ \      / /   / __ \/ ____/ //_// ____/ __ \  #
+	#   | | /| / / /_/ /_____/ /   / / / / /   / ,<  / __/ / /_/ /  #
+	#   | |/ |/ / ____/_____/ /___/ /_/ / /___/ /| |/ /___/ _, _/   #
+	#   |__/|__/_/         /_____/\____/\____/_/ |_/_____/_/ |_|    #
+	#                                                               #
+	#      Repository: https://github.com/tfirdaus/wp-locker        #
+	# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-	if [[ ! -z $SITEURL_ESC ]] && [[ "$1" != "$SITEURL_ESC" ]]; then
-		echo "🔄 Replacing the site URLs in the database to $1."
-		run wp search-replace "$SITEURL_ESC" "$1" --precise --recurse-objects --all-tables --skip-themes --skip-plugins
+	EOF
 	fi
 }
 
 install_wp() {
-	if [ $# -lt 2 ]; then
-		echo "usage: $0 <plugin|theme> <list-of-plugins|theme>"
-	fi
 
 	if [[ "$1" = "plugin" ]] || [[ "$1" = "theme" ]]; then
-
 		local PLUGINS_INSTALLED=()
+		local THEME_INSTALLED=""
 
-		# Install WordPress plugins
 		IFS=',' read -ra WP_REPOS <<< "$2"
-		if [[ ${WP_REPOS[@]} ]]; then
-			for WP_REPO in "${WP_REPOS[@]}"; do
-				if ! $(run wp $1 is-installed $WP_REPO) && [[ "$1" = "plugin" ]]; then
-					PLUGINS_INSTALLED+=("$WP_REPO")
-				fi
-
-				if ! $(run wp $1 is-installed $WP_REPO) && [[ "$1" = "theme" ]] && [[ -z $THEME_INSTALLED ]]; then
-					local THEME_INSTALLED=$WP_REPO
-				fi
-			done
-
-			if [[ ${PLUGINS_INSTALLED[@]} ]]; then
-				run_root wp plugin install "${PLUGINS_INSTALLED[@]}" --activate --allow-root
+		for WP_REPO in "${WP_REPOS[@]}"; do
+			if ! run wp $1 is-installed $WP_REPO && [[ "$1" = "plugin" ]]; then
+				PLUGINS_INSTALLED+=("$WP_REPO")
+			elif [[ "$1" = "plugin" ]]; then
+				echo "⚠️  '${WP_REPO}' plugin already installed."
 			fi
 
-			if [[ "$1" = "theme" ]] && [[ ! -z $THEME_INSTALLED ]]; then
-				run_root wp theme install $THEME_INSTALLED --activate --allow-root
+			if ! run wp $1 is-installed $WP_REPO && [[ "$1" = "theme" ]] && [[ -z $THEME_INSTALLED ]]; then
+				THEME_INSTALLED=$WP_REPO
+			elif [[ "$1" = "theme" ]]; then
+				echo "⚠️  '${WP_REPO}' theme already installed."
 			fi
+		done
+
+		if [[ ${PLUGINS_INSTALLED[*]} ]]; then
+			echo "🚥 Installing WordPress plugins..."
+			run_root wp plugin install "${PLUGINS_INSTALLED[@]}" --activate --allow-root
 		fi
+
+        if [[ "$1" = "theme" ]] && [[ ! -z $THEME_INSTALLED ]]; then
+            echo "🚥 Installing a WordPress theme..."
+			run_root wp theme install $THEME_INSTALLED --activate --allow-root
+		fi
+	else
+		echo "⛔️ Usage: $0 <plugin|theme> <list-of-plugins|list-of-themes>"
 	fi
 }
 
 install_git_repo() {
-	# Don't bother proceeding if the `git` command is not present.
-	if [[ ! `which git` ]]; then
-		echo "⛔️ Cannot clone Git repositories. Git is not installed on your system."
-		exit 1
-	fi
-
 	local GIT_REPOS=$1
+	local REPO_DIR=""
+	local REPO_BASEURL=""
 
 	for i in "${@:2}"; do
 		case $i in
 			--source=*)
 			if [[ ${i#*=} = "bitbucket" ]]; then
-				local REPO_BASEURL=https://bitbucket.org/
+				REPO_BASEURL=https://bitbucket.org/
+			fi
+            if [[ ${i#*=} = "gitlab" ]]; then
+				REPO_BASEURL=https://gitlab.com/
 			fi
 			shift;;
 			--dest=*)
@@ -86,35 +89,31 @@ install_git_repo() {
 			shift;;
 		esac
 	done
-
+	run mkdir -p ${REPO_DEST:-wp-content} # Ensure the directory is there.
 	IFS=',' read -ra repositories <<< "$GIT_REPOS"
-	if [[ ${repositories[@]} ]]; then
-		# Ensure the directory is there.
-		mkdir -p ${REPO_DEST:-wp-content} && cd ${REPO_DEST:-wp-content}
-
-		# Loop through it.
-		for repo in "${repositories[@]}"; do
-			local REPO_DIR=$(echo $repo | cut -d'/' -f2 | cut -d':' -f2)
-			if [[ -z "$(ls -A ${REPO_DIR:-})" ]]; then
-				echo "Cloning '${repo%:*}' to '${REPO_DEST:-wp-content}/${REPO_DIR:-}'."
-				git clone ${REPO_BASEURL:-https://github.com/}${repo%:*}.git ${REPO_DIR:-}
-			fi
-		done
-		cd - &>/dev/null
-	fi
+	for repo in "${repositories[@]}"; do
+		REPO_DIR=$(echo ${repo##*/} | cut -d'@' -f2)
+		if [[ ! -d ${REPO_DEST:-wp-content}/${REPO_DIR:-} ]] || [[ -z "$(run ls -A ${REPO_DEST:-wp-content}/${REPO_DIR:-} 2>/dev/null)" ]]; then
+			echo "↙️  Cloning '${repo%@*}'..."
+			run bash -c "cd ${REPO_DEST:-wp-content} && \
+			git clone --quiet --progress ${REPO_BASEURL:-https://github.com/}${repo%@*}.git ${REPO_DIR:-}"
+		else
+			echo "⚠️  The '${REPO_DEST:-wp-content}/${REPO_DIR:-}' directory is not empty; '${repo%@*}' repository might has been cloned."
+		fi
+	done
 }
 
-banner() {
-    if [[ -z $NOBANNER ]]; then
-	cat <<-'EOF'
-  _       ______        __    ____  ________ __ __________
- | |     / / __ \      / /   / __ \/ ____/ //_// ____/ __ \
- | | /| / / /_/ /_____/ /   / / / / /   / ,<  / __/ / /_/ /
- | |/ |/ / ____/_____/ /___/ /_/ / /___/ /| |/ /___/ _, _/
- |__/|__/_/         /_____/\____/\____/_/ |_/_____/_/ |_|
-
-    Repository: https://github.com/tfirdaus/wp-locker
-
-	EOF
-    fi
+replace_urls() {
+	regex='(http|https)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
+	if [[ $1 =~ $regex ]]; then
+		SITEURL=$(run wp option get siteurl)
+		SITEURL_ESC=$(echo -e "$SITEURL" | sed -e 's/[[:space:]]*$//' -e "s/'//g")
+	else
+		echo "⛔️ URL is not supplied or invalid."
+	fi
+	if [[ ! -z "$SITEURL_ESC" ]] && [[ "$1" != "$SITEURL_ESC" ]]; then
+		echo "🔄 Replacing the site URLs in the database to $1."
+		run wp search-replace "$SITEURL_ESC" "$1" --precise --recurse-objects --all-tables --skip-themes --skip-plugins
+        echo "⌨️  Your site is now accessible at: ${WORDPRESS_SITE_URL_HTTPS:-$WORDPRESS_SITE_URL}"
+	fi
 }
