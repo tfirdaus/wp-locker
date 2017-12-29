@@ -1,7 +1,7 @@
 version: '3'
 services:
   wordpress:
-    image: tfirdaus/wp-docklines:php7.2-apache
+    build: .
     depends_on:
       - database
     restart: on-failure
@@ -9,12 +9,7 @@ services:
       - ${WORDPRESS_PORT}:80
       - ${WORDPRESS_PORT_HTTPS}:443
     volumes:
-      # Cache WordPress plugins installed in the containers
-      - wp-plugins:/var/www/html/wp-content/plugins
-
-      # Projects.
-      - ./wp-content/plugins/foo-bar:/var/www/html/wp-content/plugins/foo-bar
-      - ./wp-content/themes/underscores:/var/www/html/wp-content/plugins/underscores
+      - ./wordpress:/var/www/html
     environment:
       WORDPRESS_DB_HOST: ${DATABASE_HOST}
       WORDPRESS_DB_NAME: ${DATABASE_NAME}
@@ -43,4 +38,3 @@ services:
       - PMA_HOST=${DATABASE_HOST}
 volumes:
   mysql:
-  wp-plugins:

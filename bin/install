@@ -1,16 +1,31 @@
 #!/bin/bash
 
+# ======================================================================
 # Initialize a project (installing plugins, dependencies, and WordPress)
+# ======================================================================
+
+# shellcheck source=bin/shared
 source "$(dirname "$0")/shared"
 
 # Get environment variables.
-export $(egrep -v '^#' .env | xargs)
+while IFS= read -r line; do
+	export "$(echo -e "$line" | sed -e 's/[[:space:]]*$//' -e "s/'//g")"
+done < <(cat .env | grep WORDPRESS_) # Get the "DATABASE_" variables.
 
-# Determine the site URL.
+INSTALL_PLUGINS=""
+INSTALL_THEMES=""
 WORDPRESS_SITE_URL="http://${WORDPRESS_SITE_DOMAIN}:${WORDPRESS_PORT}"
 for i in "$@"; do
 	case $i in
-	    --https)
+		--wp-plugins)
+	    INSTALL_PLUGINS=1
+	    shift
+	    ;;
+		--wp-themes)
+	    INSTALL_THEMES=1
+	    shift
+	    ;;
+		--https)
 	    WORDPRESS_SITE_URL_HTTPS="https://${WORDPRESS_SITE_DOMAIN}:${WORDPRESS_PORT_HTTPS}"
 	    shift
 	    ;;
@@ -21,7 +36,7 @@ done
 banner
 
 # Install WordPress Core
-if ! $(run wp core is-installed &>/dev/null); then
+if ! run wp core is-installed &>/dev/null; then
 
 	# ========================================================================================================================
 	# NOTE: The command may throw an error even though we have added --skip-email parameter. But I guess we can just ignore it.
@@ -29,22 +44,35 @@ if ! $(run wp core is-installed &>/dev/null); then
 	# It might also throw an error if the site have `mu-plugins` active.
 	# ========================================================================================================================
 
-	echo "🔄 Installing WordPress Core."
+	echo "🚥 Installing WordPress Core..."
 	run wp core install \
+		--skip-email \
 		--title=${WORDPRESS_SITE_TITLE:-\"WordPress\"} \
 		--url=${WORDPRESS_SITE_URL_HTTPS:-$WORDPRESS_SITE_URL} \
 		--admin_user=${WORDPRESS_ADMIN_USER:-admin} \
 		--admin_password=${WORDPRESS_ADMIN_PASSWORD:-password} \
-		--admin_email=${WORDPRESS_ADMIN_EMAIL:-admin@localhost.local} \
-		--skip-email
+		--admin_email=${WORDPRESS_ADMIN_EMAIL:-admin@localhost.local}
+else
+	echo "⚠️  WordPress Core already installed."
 fi
 
-install_wp plugin "$WORDPRESS_PLUGINS"
-install_wp theme "$WORDPRESS_THEMES"
+# Get environment variables for Projects.
+while IFS= read -r line; do
+	export "$(echo -e "$line" | sed -e 's/[[:space:]]*$//' -e "s/'//g")"
+done < <(cat .env | grep PROJECTS_) # Get the "DATABASE_" variables.
 
-install_git_repo "$PROJECTS_GITHUB_PLUGINS" --dest=wp-content/plugins
-install_git_repo "$PROJECTS_GITHUB_THEMES" --dest=wp-content/themes
-install_git_repo "$PROJECTS_BITBUCKET_PLUGINS" --source=bitbucket --dest=wp-content/plugins
-install_git_repo "$PROJECTS_BITBUCKET_THEMES" --source=bitbucket --dest=wp-content/themes
+if [[ -n $INSTALL_PLUGINS ]] && [[ $INSTALL_PLUGINS -ge 1 ]]; then
+	install_wp plugin "$WORDPRESS_PLUGINS"
+	# install_git_repo "$PROJECTS_GITHUB_PLUGINS" --dest=wp-content/plugins
+	# install_git_repo "$PROJECTS_BITBUCKET_PLUGINS" --source=bitbucket --dest=wp-content/plugins
+	# install_git_repo "$PROJECTS_GITLAB_PLUGINS" --source=gitlab --dest=wp-content/plugins
+fi
+
+if [[ -n $INSTALL_THEMES ]] && [[ $INSTALL_THEMES -ge 1 ]]; then
+	install_wp theme "$WORDPRESS_THEMES"
+	# install_git_repo "$PROJECTS_GITHUB_THEMES" --dest=wp-content/themes
+	# install_git_repo "$PROJECTS_BITBUCKET_THEMES" --source=bitbucket --dest=wp-content/themes
+	# install_git_repo "$PROJECTS_GITLAB_THEMES" --source=gitlab --dest=wp-content/themes
+fi
 
 replace_urls "${WORDPRESS_SITE_URL_HTTPS:-$WORDPRESS_SITE_URL}"

@@ -1,15 +1,16 @@
 #!/bin/bash
+
+# shellcheck source=bin/shared
 source "$(dirname "$0")/shared"
 
 # Show a fancy banner \o/
 banner
 
-export TIMESTAMP=$(date +"%Y-%m-%d-%H%M%S")
+TIMESTAMP=$(date +"%Y-%m-%d-%H%M%S")
 
-# Get the WordPress variables.
 while IFS= read -r line; do
-	export $(echo -e "$line" | sed -e 's/[[:space:]]*$//' -e "s/'//g")
-done < <(cat .env | grep DATABASE_)
+	export "$(echo -e "$line" | sed -e 's/[[:space:]]*$//' -e "s/'//g")"
+done < <(cat .env | grep DATABASE_) # Get the "DATABASE_" variables.
 
 echo "📤 Exporting the '${DATABASE_NAME}' database."
 echo "📦 Generating dump/${DATABASE_NAME}-${TIMESTAMP}.sql."
