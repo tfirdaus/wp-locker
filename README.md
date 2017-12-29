@@ -38,7 +38,20 @@ To turn the container back up, simply run:
 bin/up -d
 ```
 
-You can browse the site again at `http://localhost:8082`, and be sure to check the [Wiki](https://github.com/tfirdaus/wp-locker/wiki) for more usage and tutorials.
+You can browse the site again at `http://localhost:8082`, and be sure to check the **[Wiki page](https://github.com/tfirdaus/wp-locker/wiki)** for more usage and tutorials.
+
+## Shell Helper Cheatsheet
+
+**WP-Locker** comes with a set of Shell helpers to perform some _tedious_ tasks. Here are some that you might need often:
+
+| Command | Description |
+| --- | --- |
+| `bin/start` | Starting the localhost with WordPress, the theme, and the plugins installed |
+| `bin/start --https` | Starting the localhost to load with HTTPS; also install WordPress, theme, and plugins if it's not done so |
+| `bin/up` | Build/rebuild the Docker image and spinning the localhost |
+| `bin/up -d` | Spinning up the localhost in the background |
+| `bin/down` | Shutting-down the container |
+| `bin/destroy` | Shutting-down the container and remove everything |
 
 ## Looking for an nginx flavour?
 
