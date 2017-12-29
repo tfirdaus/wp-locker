@@ -92,14 +92,14 @@ install_git_repo() {
 
 	IFS=',' read -ra repositories <<< "$GIT_REPOS"
 	for repo in "${repositories[@]}"; do
-		REPO_DIR=$(echo ${repo##*/} | cut -d'@' -f2)
+		REPO_DIR=$(echo ${repo##*/} | cut -d':' -f2)
 		run mkdir -p ${REPO_DEST:-wp-content}/${REPO_DIR:-} # Ensure the directory is there.
 		if [[ "$(run ls -A ${REPO_DEST:-wp-content}/${REPO_DIR:-} 2>/dev/null)" ]]; then
-			echo "⚠️  The '${REPO_DEST:-wp-content}/${REPO_DIR:-}' directory is not empty; '${repo%@*}' repository might has been cloned."
+			echo "⚠️  The '${REPO_DEST:-wp-content}/${REPO_DIR:-}' directory is not empty; '${repo%:*}' repository might has been cloned."
 		else
-			echo "↙️  Cloning '${repo%@*}'..."
+			echo "↙️  Cloning '${repo%:*}'..."
 			run bash -c "cd ${REPO_DEST:-wp-content} && \
-			git clone --quiet --progress ${REPO_BASEURL:-https://github.com/}${repo%@*}.git ${REPO_DIR:-}"
+			git clone --quiet --progress ${REPO_BASEURL:-https://github.com/}${repo%:*}.git ${REPO_DIR:-}"
 		fi
 	done
 }

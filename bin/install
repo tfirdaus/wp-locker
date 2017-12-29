@@ -63,16 +63,16 @@ done < <(cat .env | grep PROJECTS_) # Get the "DATABASE_" variables.
 
 if [[ -n $INSTALL_PLUGINS ]] && [[ $INSTALL_PLUGINS -ge 1 ]]; then
 	install_wp plugin "$WORDPRESS_PLUGINS"
-	install_git_repo "$PROJECTS_GITHUB_PLUGINS" --dest=wp-content/plugins
-	install_git_repo "$PROJECTS_BITBUCKET_PLUGINS" --source=bitbucket --dest=wp-content/plugins
-	install_git_repo "$PROJECTS_GITLAB_PLUGINS" --source=gitlab --dest=wp-content/plugins
+	# install_git_repo "$PROJECTS_GITHUB_PLUGINS" --dest=wp-content/plugins
+	# install_git_repo "$PROJECTS_BITBUCKET_PLUGINS" --source=bitbucket --dest=wp-content/plugins
+	# install_git_repo "$PROJECTS_GITLAB_PLUGINS" --source=gitlab --dest=wp-content/plugins
 fi
 
 if [[ -n $INSTALL_THEMES ]] && [[ $INSTALL_THEMES -ge 1 ]]; then
 	install_wp theme "$WORDPRESS_THEMES"
-	install_git_repo "$PROJECTS_GITHUB_THEMES" --dest=wp-content/themes
-	install_git_repo "$PROJECTS_BITBUCKET_THEMES" --source=bitbucket --dest=wp-content/themes
-	install_git_repo "$PROJECTS_GITLAB_THEMES" --source=gitlab --dest=wp-content/themes
+	# install_git_repo "$PROJECTS_GITHUB_THEMES" --dest=wp-content/themes
+	# install_git_repo "$PROJECTS_BITBUCKET_THEMES" --source=bitbucket --dest=wp-content/themes
+	# install_git_repo "$PROJECTS_GITLAB_THEMES" --source=gitlab --dest=wp-content/themes
 fi
 
 replace_urls "${WORDPRESS_SITE_URL_HTTPS:-$WORDPRESS_SITE_URL}"
