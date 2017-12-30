@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# shellcheck source=bin/shared
+source "$(dirname "$0")/shared"
+
+if [[ -z "$1" ]]; then
+	echo "⛔️ Usage: $0 <new-url>"
+	exit 1
+fi
+
+replace_urls $1
