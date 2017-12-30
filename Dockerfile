@@ -1,7 +1,7 @@
 FROM tfirdaus/wp-docklines:php7.2-apache
 
-ARG WP_WORKDIR=/var/www/html
-WORKDIR $WP_WORKDIR
+ARG WORDPRESS_WORKDIR=/var/www/html
+WORKDIR $WORDPRESS_WORKDIR
 
 COPY ./config/wp-locker-php.ini /usr/local/etc/php/conf.d/
 COPY ./config/wp-config-sample.php /usr/src/wordpress/
