@@ -1,7 +1,10 @@
 version: '3'
 services:
   wordpress:
-    build: .
+    build:
+      context: .
+      args:
+        WORDPRESS_WORKDIR: ${WORDPRESS_WORKDIR}
     depends_on:
       - database
     restart: on-failure

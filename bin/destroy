@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "⚠️  This operation will remove the localhost containers, volumes, and the WordPress core files."
+echo "⛔️ This operation will remove the localhost containers, volumes, and the WordPress core files."
 while true; do
     read -p "Do you wish to proceed? [y/n]" yn
     case $yn in

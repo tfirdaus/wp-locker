@@ -9,7 +9,7 @@ banner
 # Suppress banner from appearing.
 export WP_LOCKER_BANNER=0
 
-"$(dirname "$0")"/up -d
+"$(dirname "$0")"/up --build -d
 
 while ! run cat wp-config.php > /dev/null 2>&1; do
 	sleep 2

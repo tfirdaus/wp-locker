@@ -75,4 +75,4 @@ if [[ -n $INSTALL_THEMES ]] && [[ $INSTALL_THEMES -ge 1 ]]; then
 	install_git_repo "$PROJECTS_GITLAB_THEMES" --source=gitlab --dest=wp-content/themes
 fi
 
-replace_urls "${WORDPRESS_SITE_URL_HTTPS:-$WORDPRESS_SITE_URL}"
+replace_urls "${WORDPRESS_SITE_URL_HTTPS:-$WORDPRESS_SITE_URL}${WORDPRESS_SITE_SUBDIR}"
