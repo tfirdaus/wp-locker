@@ -2,6 +2,9 @@
 
 **WP-Locker**, stands for "WordPress Local Docker", is a Docker configuration to set up an Apache localhost environment for WordPress site development. It is based on the [WP-Docklines](https://github.com/tfirdaus/wp-docklines) image. It includes tools and utilities that are commonly required in WordPress development such as [PHPUnit](https://phpunit.de/), [PHPCS](https://github.com/squizlabs/PHP_CodeSniffer), and [WordPress Coding Standards](https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards).
 
+### Why?
+There are a number of Docker configurations for WordPress development. Yet, I found most of these images are stacked with things that are not needed in my projects, unsuitable for my workflow, or do not work with the CI service that I'm using. So eventually, I have to built my own and it's also become an opportunity for me to dig into Docker deeper.
+
 ## Requirements
 
 To get "WP-Locker" up and running, you'll need to the following installed on your computer:

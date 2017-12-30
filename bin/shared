@@ -116,5 +116,5 @@ replace_urls() {
 		echo "🔄 Replacing the site URLs in the database to $1."
 		run wp search-replace "$SITEURL_ESC" "$1" --precise --recurse-objects --all-tables --skip-themes --skip-plugins
 	fi
-	echo "⌨️  Your site is now accessible at: ${WORDPRESS_SITE_URL_HTTPS:-$WORDPRESS_SITE_URL}${WORDPRESS_SITE_SUBDIR}"
+	echo "⌨️  Your site is now accessible at: ${WP_SITE_URL_HTTPS:-$WP_SITE_URL}${WP_SITE_SUBDIR}"
 }
