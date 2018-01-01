@@ -7,10 +7,9 @@
 # shellcheck source=bin/shared
 source "$(dirname "$0")/shared"
 
-# Get environment variables.
 while IFS= read -r line; do
 	export "$(echo -e "$line" | sed -e 's/[[:space:]]*$//' -e "s/'//g")"
-done < <(cat .env | grep WP_) # Get the "DATABASE_" variables.
+done < <(cat .env | grep WP_)
 
 INSTALL_PLUGINS=""
 INSTALL_THEMES=""
@@ -56,10 +55,9 @@ else
 	echo "⚠️  WordPress Core already installed."
 fi
 
-# Get environment variables for Projects.
 while IFS= read -r line; do
 	export "$(echo -e "$line" | sed -e 's/[[:space:]]*$//' -e "s/'//g")"
-done < <(cat .env | grep PROJECTS_) # Get the "DATABASE_" variables.
+done < <(cat .env | grep PROJECTS_)
 
 if [[ -n $INSTALL_PLUGINS ]] && [[ $INSTALL_PLUGINS -ge 1 ]]; then
 	install_wp plugin "$WP_PLUGINS"
