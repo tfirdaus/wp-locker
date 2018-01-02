@@ -21,4 +21,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Wrap the PMA port withing a quote as suggested in [https://docs.docker.com/compose/compose-file/#ports](https://docs.docker.com/compose/compose-file/#ports)
 - (Beta) status from the README
 
-[Unreleased]: https://github.com/tfirdaus/wp-locker/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/tfirdaus/wp-locker/compare/v0.1.0...HEAD
