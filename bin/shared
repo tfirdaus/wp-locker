@@ -118,3 +118,8 @@ replace_urls() {
 		echo "⌨️  Your site is now accessible at: $1"
 	fi
 }
+
+reset_permission() {
+	echo "👩🏼‍🔧 👨🏼‍🔧 Resetting owner & permission..."
+	run_root bash -c "chown www-data:www-data -R ./*"
+}
