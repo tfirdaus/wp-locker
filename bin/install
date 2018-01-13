@@ -46,7 +46,7 @@ if ! run wp core is-installed &>/dev/null; then
 	echo "🚥 Installing WordPress Core..."
 	run wp core install \
 		--skip-email \
-		--title=${WP_SITE_TITLE:-\"WordPress\"} \
+		--title="${WP_SITE_TITLE:-WordPress}" \
 		--url=${WP_SITE_URL_HTTPS:-$WP_SITE_URL} \
 		--admin_user=${WP_ADMIN_USER:-admin} \
 		--admin_password=${WP_ADMIN_PASSWORD:-password} \
@@ -73,4 +73,5 @@ if [[ -n $INSTALL_THEMES ]] && [[ $INSTALL_THEMES -ge 1 ]]; then
 	install_git_repo "$PROJECTS_GITLAB_THEMES" --source=gitlab --dest=wp-content/themes
 fi
 
+reset_permission
 replace_urls "${WP_SITE_URL_HTTPS:-$WP_SITE_URL}${WP_SITE_SUBDIR}"

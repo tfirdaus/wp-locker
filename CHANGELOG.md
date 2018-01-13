@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.1.1] - 2018-01-13
+### Added
+- Shell helper to reset user group and permission
+
+### Fixed
+- "Too many positional arguments", which may appear when title passed contains two words or wrapped within a quote. [wp-cli/issues#1928](https://github.com/wp-cli/wp-cli/issues/1928)
+
 ## 0.1.0 - 2018-01-02
 ### Added
 - SSL & HTTP Support
@@ -21,4 +28,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Wrap the PMA port withing a quote as suggested in [https://docs.docker.com/compose/compose-file/#ports](https://docs.docker.com/compose/compose-file/#ports)
 - (Beta) status from the README
 
-[Unreleased]: https://github.com/tfirdaus/wp-locker/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/tfirdaus/wp-locker/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/tfirdaus/wp-locker/compare/v0.1.0...v0.1.1
