@@ -20,7 +20,7 @@ Follow the instruction below to get it up and running.
 Download or clone this repository. This following command will clone it to a new directory named `wp-locker` and change the directory to it.
 
 ```
-git clone https://github.com/tfirdaus/wp-locker.git && cd wp-locker
+git clone -b master https://github.com/tfirdaus/wp-locker.git wp-locker && cd wp-locker
 ```
 
 Run the following command to start the localhost. It will build the containers up, install WordPress Core with the default configuration in the `.env` file, installing the plugins from [WordPress.org repository](https://wordpress.org/plugins/) as well as the specified [Github](https://github.com/) or [Bitbucket](https://bitbucket.org/) repositories.
