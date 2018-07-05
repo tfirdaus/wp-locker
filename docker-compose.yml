@@ -3,11 +3,10 @@ services:
   wordpress:
     build:
       context: .
-      args:
-        WORDPRESS_WORKDIR: ${WP_WORKDIR}
     depends_on:
       - database
     restart: on-failure
+    working_dir: ${WP_ROOT_DIR}
     ports:
       - "${WP_PUBLISHED_PORT}:80"
       - "${WP_PUBLISHED_PORT_HTTPS}:443"
