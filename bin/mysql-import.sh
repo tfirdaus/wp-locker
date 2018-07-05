@@ -11,14 +11,14 @@ if [ -z "$*" ]; then
 else
 	while IFS= read -r line; do
 		export "$(echo -e "$line" | sed -e 's/[[:space:]]*$//' -e "s/'//g")"
-	done < <(cat .env | grep DATABASE_) # Get the "DATABASE_" variables.
+	done < <(cat .env | grep DB_) # Get the "DB_" variables.
 
-    echo "📥 Importing into the '${DATABASE_NAME}' database"
+    echo "📥 Importing into the '${DB_NAME}' database"
     docker-compose exec database mysql \
         --default-character-set=utf8mb4 \
-        -u${DATABASE_USER} \
-        -p${DATABASE_PASSWORD} \
-        ${DATABASE_NAME} \
+        -u${DB_USER} \
+        -p${DB_PASSWORD} \
+        ${DB_NAME} \
         < "$@"
 
     echo "👌 Done!"
