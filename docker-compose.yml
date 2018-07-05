@@ -1,5 +1,6 @@
 version: '3'
 services:
+
   wordpress:
     build:
       context: .
@@ -11,14 +12,15 @@ services:
       - "${WP_PUBLISHED_PORT}:80"
       - "${WP_PUBLISHED_PORT_HTTPS}:443"
     volumes:
-      - ./wordpress:/var/www/html
+      - "./wordpress:${WP_ROOT_DIR}"
     environment:
       WORDPRESS_DB_HOST: ${DB_HOST}
       WORDPRESS_DB_NAME: ${DB_NAME}
       WORDPRESS_DB_USER: ${DB_USER}
       WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
+
   database:
-    image: mysql:5.5
+    image: ${DB_IMAGE}
     volumes:
       - mysql:/var/lib/mysql
     restart: on-failure
@@ -29,8 +31,9 @@ services:
       MYSQL_DATABASE: ${DB_NAME}
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
+
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin
+    image: ${PMA_IMAGE}
     depends_on:
       - database
     restart: on-failure
@@ -38,5 +41,6 @@ services:
       - "${PMA_PUBLISHED_PORT}:80"
     environment:
       - PMA_HOST=${DB_HOST}
+
 volumes:
   mysql:
