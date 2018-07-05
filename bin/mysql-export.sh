@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# shellcheck source=bin/shared
-source "$(dirname "$0")/shared"
+# shellcheck source=bin/shared.sh
+source "$(dirname "$0")/shared.sh"
 
 # Show a fancy banner \o/
 banner
@@ -24,4 +24,4 @@ docker-compose exec database mysqldump --opt \
     -p${DATABASE_PASSWORD} \
     ${DATABASE_NAME} \
     > dump/${DATABASE_NAME}-${TIMESTAMP}.sql
-echo "👌🏼 Done!"
+echo "👌 Done!"

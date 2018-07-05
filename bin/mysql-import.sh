@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# shellcheck source=bin/shared
-source "$(dirname "$0")/shared"
+# shellcheck source=bin/shared.sh
+source "$(dirname "$0")/shared.sh"
 
 # Show a fancy banner \o/
 banner
@@ -21,5 +21,5 @@ else
         ${DATABASE_NAME} \
         < "$@"
 
-    echo "👌🏼 Done!"
+    echo "👌 Done!"
 fi
