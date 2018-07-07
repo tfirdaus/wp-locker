@@ -7,4 +7,4 @@ sudo openssl x509 -req -days 3650 -in ssl/certs/wp-locker-csr.pem -signkey ssl/c
 
 # Examine the SSL cert.
 openssl x509 -in ssl/certs/wp-locker-crt.pem -text -noout
-echo "👌🏼 Done!"
+echo "👌 Done!"
