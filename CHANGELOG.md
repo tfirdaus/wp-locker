@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.1.2] - 2018-07-07
+
+### Changed
+
+- Run the `wp` command as a user instead of root.
+
+### Added
+
+- `wp.local` as an alternative domain and regenerate the default SSL cert to include the domain.
+
+### Fixed
+
+- Working directory environment variable.
+- Apache RUN and LOG directory variable.
+
 ## [0.1.1] - 2018-01-13
 
 ### Added
