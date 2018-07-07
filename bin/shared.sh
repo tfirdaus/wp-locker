@@ -45,28 +45,31 @@ install_wp() {
 			if ! run wp $1 is-installed $WP_REPO && [[ "$1" = "plugin" ]]; then
 				PLUGINS_INSTALLED+=("$WP_REPO")
 			elif [[ "$1" = "plugin" ]]; then
-				echo "⚠️  '${WP_REPO}' plugin already installed."
+				echo "⚠️ '${WP_REPO}' plugin already installed."
 			fi
 
 			if ! run wp $1 is-installed $WP_REPO && [[ "$1" = "theme" ]] && [[ -z $THEME_INSTALLED ]]; then
 				THEME_INSTALLED=$WP_REPO
 			elif [[ "$1" = "theme" ]]; then
-				echo "⚠️  '${WP_REPO}' theme already installed."
+				echo "⚠️ '${WP_REPO}' theme already installed."
 			fi
 		done
 
 		if [[ ${PLUGINS_INSTALLED[*]} ]]; then
 			echo "🚥 Installing WordPress plugins..."
-			run_root wp plugin install "${PLUGINS_INSTALLED[@]}" --activate --allow-root
+			run wp plugin install "${PLUGINS_INSTALLED[@]}" --activate --allow-root
 		fi
 
         if [[ "$1" = "theme" ]] && [[ ! -z $THEME_INSTALLED ]]; then
             echo "🚥 Installing a WordPress theme..."
-			run_root wp theme install $THEME_INSTALLED --activate --allow-root
+			run wp theme install $THEME_INSTALLED --activate --allow-root
 		fi
 	else
 		echo "⛔️ Usage: $0 <plugin|theme> <list-of-plugins|list-of-themes>"
 	fi
+
+	run wp plugin update --all --skip-plugins --skip-themes
+	run wp theme update --all --skip-plugins --skip-themes
 }
 
 install_git_repo() {
@@ -95,9 +98,9 @@ install_git_repo() {
 		REPO_DIR=$(echo ${repo##*/} | cut -d':' -f2)
 		run mkdir -p ${REPO_DEST:-wp-content}/${REPO_DIR:-} # Ensure the directory is there.
 		if [[ "$(run ls -A ${REPO_DEST:-wp-content}/${REPO_DIR:-} 2>/dev/null)" ]]; then
-			echo "⚠️  The '${REPO_DEST:-wp-content}/${REPO_DIR:-}' directory is not empty; '${repo%:*}' repository might has been cloned."
+			echo "⚠️ The '${REPO_DEST:-wp-content}/${REPO_DIR:-}' directory is not empty; '${repo%:*}' repository might has been cloned."
 		else
-			echo "↙️  Cloning '${repo%:*}'..."
+			echo "↙️ Cloning '${repo%:*}'..."
 			run bash -c "cd ${REPO_DEST:-wp-content} && \
 			git clone --quiet --progress ${REPO_BASEURL:-https://github.com/}${repo%:*}.git ${REPO_DIR:-}"
 		fi
@@ -115,11 +118,12 @@ replace_urls() {
 	if [[ ! -z "$SITEURL_ESC" ]] && [[ "$1" != "$SITEURL_ESC" ]]; then
 		echo "🔄 Replacing the site URLs in the database to $1."
 		run wp search-replace "$SITEURL_ESC" "$1" --precise --recurse-objects --all-tables --skip-themes --skip-plugins
-		echo "⌨️  Your site is now accessible at: $1"
 	fi
+
+	echo "Your site URL: $1"
 }
 
 reset_permission() {
-	echo "👩🏼‍🔧 👨🏼‍🔧 Resetting owner & permission..."
+	echo "🚥 Resetting owner & permission..."
 	run_root bash -c "chown www-data:www-data -R ./*"
 }

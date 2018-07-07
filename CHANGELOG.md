@@ -1,4 +1,5 @@
 # Changelog
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
@@ -7,14 +8,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 ## [0.1.1] - 2018-01-13
+
 ### Added
+
 - Shell helper to reset user group and permission
 
 ### Fixed
+
 - "Too many positional arguments", which may appear when title passed contains two words or wrapped within a quote. [wp-cli/issues#1928](https://github.com/wp-cli/wp-cli/issues/1928)
 
-## 0.1.0 - 2018-01-02
+## [0.1.0] - 2018-01-02
+
 ### Added
+
 - SSL & HTTP Support
 - A Shell helper to start the container and install WordPress
 - A Shell helper to remove the container and the WordPress installation
@@ -25,6 +31,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Ability to define plugins and theme to install from a remote Github, Bitbucket, and Gitlab
 
 ### Changed
+
 - Wrap the PMA port withing a quote as suggested in [https://docs.docker.com/compose/compose-file/#ports](https://docs.docker.com/compose/compose-file/#ports)
 - (Beta) status from the README
 

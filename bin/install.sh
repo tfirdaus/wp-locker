@@ -4,8 +4,8 @@
 # Initialize a project (installing plugins, dependencies, and WordPress)
 # ======================================================================
 
-# shellcheck source=bin/shared
-source "$(dirname "$0")/shared"
+# shellcheck source=bin/shared.sh
+source "$(dirname "$0")/shared.sh"
 
 while IFS= read -r line; do
 	export "$(echo -e "$line" | sed -e 's/[[:space:]]*$//' -e "s/'//g")"
@@ -52,7 +52,7 @@ if ! run wp core is-installed &>/dev/null; then
 		--admin_password=${WP_ADMIN_PASSWORD:-password} \
 		--admin_email=${WP_ADMIN_EMAIL:-admin@localhost.local}
 else
-	echo "⚠️  WordPress Core already installed."
+	echo "⚠️ WordPress Core already installed."
 fi
 
 while IFS= read -r line; do
