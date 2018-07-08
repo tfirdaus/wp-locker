@@ -2,8 +2,7 @@ version: '3'
 services:
 
   wordpress:
-    build:
-      context: .
+    image: tfirdaus/wp-docklines:php7.2-apache
     depends_on:
       - database
     restart: on-failure
@@ -12,7 +11,21 @@ services:
       - "${WP_PUBLISHED_PORT}:80"
       - "${WP_PUBLISHED_PORT_HTTPS}:443"
     volumes:
+      # WordPress Core install.
       - "./wordpress:${WP_ROOT_DIR}"
+
+      # Site configuration.
+      - "./config/wp-locker-php.ini:/usr/local/etc/php/conf.d/wp-locker-php.ini"
+      - "./config/wp-config-sample.php:/usr/src/wordpress/wp-config-sample.php"
+      - "./config/wp-locker.conf:/etc/apache2/sites-available/wp-locker.conf"
+      - "./config/wp-locker-ssl.conf:/etc/apache2/sites-available/wp-locker-ssl.conf"
+
+      # SSL cert.
+      - "./ssl/certs/wp-locker-crt.pem:/etc/ssl/certs/wp-locker-crt.pem"
+      - "./ssl/certs/wp-locker-key.pem:/etc/ssl/private/wp-locker-key.pem"
+
+      # Custom bash scripts.
+      - "./bin/init.sh:/usr/local/bin/init.sh"
     environment:
       WORDPRESS_DB_HOST: ${DB_HOST}
       WORDPRESS_DB_NAME: ${DB_NAME}
@@ -20,6 +33,7 @@ services:
       WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
       APACHE_LOG_DIR: ${APACHE_LOG_DIR}
       APACHE_RUN_DIR: ${APACHE_LOG_DIR}
+    command: "bash -c init.sh"
 
   database:
     image: ${DB_IMAGE}
