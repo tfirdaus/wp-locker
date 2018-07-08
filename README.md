@@ -43,7 +43,7 @@ To turn the container back up, simply run:
 bash bin/up.sh -d
 ```
 
-You can browse the site again at `http://wp.local:8082`, and be sure to check the **[Wiki page](https://github.com/tfirdaus/wp-locker/wiki)** for more usage and tutorials.
+You can browse the site again at `http://localhost:8082`, and be sure to check the **[Wiki page](https://github.com/tfirdaus/wp-locker/wiki)** for more usage and tutorials.
 
 ## Shell Helper Cheatsheet
 
