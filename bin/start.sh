@@ -8,6 +8,7 @@ banner
 
 # Suppress banner from appearing.
 export WP_LOCKER_BANNER=0
+export WP_LOCKER_START=1
 
 "$(dirname "$0")"/up.sh --build -d
 
