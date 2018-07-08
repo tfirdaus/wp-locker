@@ -2,7 +2,7 @@ version: '3'
 services:
 
   wordpress:
-    image: tfirdaus/wp-docklines:php7.2-apache
+    image: ${WP_IMAGE}
     depends_on:
       - database
     restart: on-failure
