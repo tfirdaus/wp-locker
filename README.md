@@ -35,13 +35,13 @@ bash bin/start.sh
 The site should now be available at `http://localhost:8082` unless you've changed the `WORDPRESS_DOMAIN` or `WORDPRESS_PORT` value in the `.env` file. If you've done with the development, you can turn the localhost of by running the following command; it will stop the containers, the networks, the volumes, and the images that have been created.
 
 ```shell
-bin/down.sh
+bash bin/down.sh
 ```
 
 To turn the container back up, simply run:
 
 ```shell
-bin/up.sh -d
+bash bin/up.sh -d
 ```
 
 You can browse the site again at `http://wp.local:8082`, and be sure to check the **[Wiki page](https://github.com/tfirdaus/wp-locker/wiki)** for more usage and tutorials.
