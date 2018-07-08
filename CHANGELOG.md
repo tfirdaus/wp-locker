@@ -7,15 +7,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [0.1.2] - 2018-07-07
+## [0.2.0] - 2018-07-08
+
+### Removed
+
+- Dependant on a `Dockerfile`. Configurations are now moved to `docker-compose.yml`.
 
 ### Changed
 
 - Run the `wp` command as a user instead of root.
+- Bump-up default MySQL to MySQL 5.6.
 
 ### Added
 
 - `wp.local` as an alternative domain and regenerate the default SSL cert to include the domain.
+- `init.sh` file to initialize Apache and SSL configuration.
 
 ### Fixed
 
@@ -50,5 +56,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Wrap the PMA port withing a quote as suggested in [https://docs.docker.com/compose/compose-file/#ports](https://docs.docker.com/compose/compose-file/#ports)
 - (Beta) status from the README
 
-[Unreleased]: https://github.com/tfirdaus/wp-locker/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/tfirdaus/wp-locker/compare/v0.2.0...HEAD
 [0.1.1]: https://github.com/tfirdaus/wp-locker/compare/v0.1.0...v0.1.1
+[0.2.0]: https://github.com/tfirdaus/wp-locker/compare/v0.1.1...v0.2.0
