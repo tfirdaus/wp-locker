@@ -12,7 +12,6 @@ To get "WP Locker" up and running, you'll need to the following installed on you
 
 - [Docker](https://www.docker.com/)
 - [Docker Compose](https://docs.docker.com/compose/)
-- [Git](https://git-scm.com/)
 
 Follow the instruction below to get it up and running.
 
