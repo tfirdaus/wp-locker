@@ -13,9 +13,6 @@ if [ -z "$*" ]; then
     PARAMS="--build"
 fi
 
-# Show a fancy banner \o/
-banner
-
 # Build containers
 echo -e "\\n🔄 Spinning up containers."
 if [ -e "docker-custom.yml" ]; then

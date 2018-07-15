@@ -4,9 +4,6 @@
 # shellcheck disable=SC1091
 source "$(dirname "$0")/shared.sh"
 
-# Show a fancy banner \o/
-banner
-
 TIMESTAMP=$(date +"%Y-%m-%d-%H%M%S")
 
 while IFS= read -r line; do

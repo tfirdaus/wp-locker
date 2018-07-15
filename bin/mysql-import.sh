@@ -4,9 +4,6 @@
 # shellcheck disable=SC1091
 source "$(dirname "$0")/shared.sh"
 
-# Show a fancy banner \o/
-banner
-
 while IFS= read -r line; do
 	export "$(echo -e "$line" | sed -e 's/[[:space:]]*$//' -e "s/'//g")"
 done < <(grep DB_ .env)
