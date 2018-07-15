@@ -17,8 +17,8 @@ done
 
 if [[ $IS_ROOT = "1" ]]; then
 	echo "🤓 Logging in to SSH with 'root'."
-	ssh_root "$@"
+	ssh_root
 else
 	echo "🙂 Logging in to SSH with 'www-data' user."
-	ssh "$@"
+	ssh
 fi
