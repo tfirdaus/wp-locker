@@ -13,18 +13,6 @@ contains() {
     return 1
 }
 
-# An alias command to run "docker-compose run".
-# Run a command in a new container as the www-data user.
-drun() {
-	read -r -a DOCKER_SERVICES <<< "$(docker-compose config --services)"
-
-	if [[ ! -z "$1" ]] && [[ $(contains "${DOCKER_SERVICES[@]}" "$1") == "y" ]]; then
-		docker-compose run -u www-data --rm "$1" "${@:2}"
-	else
-		docker-compose run -u www-data --rm wordpress "$@"
-	fi
-}
-
 # An alias command to run "docker-compose exec".
 # Run a command in a running container as the www-data user.
 dexec() {
