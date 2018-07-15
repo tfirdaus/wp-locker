@@ -6,8 +6,8 @@ source "$(dirname "$0")/shared.sh"
 
 for i in "${@:2}"; do
 	case $i in
-	    --root)
-	    IS_ROOT=1
+	    -R=*|--root=*)
+		IS_ROOT=1
 	    shift
 	    ;;
 	    *)
