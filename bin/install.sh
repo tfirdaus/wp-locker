@@ -4,12 +4,17 @@
 # Initialize a project (installing plugins, dependencies, and WordPress)
 # ======================================================================
 
-# shellcheck source=bin/shared.sh
+# shellcheck source=src/shared.sh
+# shellcheck disable=SC1091
 source "$(dirname "$0")/shared.sh"
 
 while IFS= read -r line; do
 	export "$(echo -e "$line" | sed -e 's/[[:space:]]*$//' -e "s/'//g")"
-done < <(cat .env | grep WP_)
+done < <(grep WP_ .env)
+
+while IFS= read -r line; do
+	export "$(echo -e "$line" | sed -e 's/[[:space:]]*$//' -e "s/'//g")"
+done < <(grep PROJECTS_ .env)
 
 INSTALL_PLUGINS=""
 INSTALL_THEMES=""
@@ -31,11 +36,8 @@ for i in "$@"; do
 	esac
 done
 
-# Show a fancy banner \o/
-banner
-
 # Install WordPress Core
-if ! run wp core is-installed &>/dev/null; then
+if ! dexec wp core is-installed &>/dev/null; then
 
 	# ========================================================================================================================
 	# NOTE: The command may throw an error even though we have added --skip-email parameter. But I guess we can just ignore it.
@@ -43,8 +45,10 @@ if ! run wp core is-installed &>/dev/null; then
 	# It might also throw an error if the site have `mu-plugins` active.
 	# ========================================================================================================================
 
-	echo "🚥 Installing WordPress Core..."
-	run wp core install \
+	echo -e "\\n🚥 Installing WordPress Core..."
+
+	# shellcheck disable=SC2086
+	dexec wp core install \
 		--skip-email \
 		--title="${WP_SITE_TITLE:-WordPress}" \
 		--url=${WP_SITE_URL_HTTPS:-$WP_SITE_URL} \
@@ -54,10 +58,6 @@ if ! run wp core is-installed &>/dev/null; then
 else
 	echo "⚠️ WordPress Core already installed."
 fi
-
-while IFS= read -r line; do
-	export "$(echo -e "$line" | sed -e 's/[[:space:]]*$//' -e "s/'//g")"
-done < <(cat .env | grep PROJECTS_)
 
 if [[ -n $INSTALL_PLUGINS ]] && [[ $INSTALL_PLUGINS -ge 1 ]]; then
 	install_wp plugin "$WP_PLUGINS"
@@ -73,5 +73,4 @@ if [[ -n $INSTALL_THEMES ]] && [[ $INSTALL_THEMES -ge 1 ]]; then
 	install_git_repo "$PROJECTS_GITLAB_THEMES" --source=gitlab --dest=wp-content/themes
 fi
 
-reset_permission
 replace_urls "${WP_SITE_URL_HTTPS:-$WP_SITE_URL}${WP_SITE_SUBDIR}"

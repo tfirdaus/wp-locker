@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# shellcheck source=bin/shared.sh
+# shellcheck source=src/shared.sh
+# shellcheck disable=SC1091
 source "$(dirname "$0")/shared.sh"
 
 # Show a fancy banner \o/
@@ -10,13 +11,15 @@ TIMESTAMP=$(date +"%Y-%m-%d-%H%M%S")
 
 while IFS= read -r line; do
 	export "$(echo -e "$line" | sed -e 's/[[:space:]]*$//' -e "s/'//g")"
-done < <(cat .env | grep DB_) # Get the "DB_" variables.
+done < <(grep DB_ .env)
 
 echo "📤 Exporting the '${DB_NAME}' database."
 echo "📦 Generating dump/${DB_NAME}-${TIMESTAMP}.sql."
 
 # Make sure the '/data' directory exist to store the database dump
 mkdir -p dump
+
+# shellcheck disable=SC2086
 docker-compose exec database mysqldump --opt \
     -h ${DB_HOST%:*} \
     -P${DB_HOST#*:} \

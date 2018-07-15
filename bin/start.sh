@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# shellcheck source=bin/shared.sh
+# shellcheck source=src/shared.sh
+# shellcheck disable=SC1091
 source "$(dirname "$0")/shared.sh"
 
 # Show a fancy banner \o/
@@ -12,7 +13,7 @@ export WP_LOCKER_START=1
 
 "$(dirname "$0")"/up.sh --build -d
 
-while ! run cat wp-config.php > /dev/null 2>&1; do
+while ! drun cat wp-config.php > /dev/null 2>&1; do
 	sleep 2
 done
 

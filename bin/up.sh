@@ -1,11 +1,12 @@
 #!/bin/bash
 
-# shellcheck source=bin/shared.sh
+# shellcheck source=src/shared.sh
+# shellcheck disable=SC1091
 source "$(dirname "$0")/shared.sh"
 
 while IFS= read -r line; do
 	export "$(echo -e "$line" | sed -e 's/[[:space:]]*$//' -e "s/'//g")"
-done < <(cat .env | grep WP_) # Get the "WP_" variables.
+done < <(grep WP_ .env)
 
 PARAMS=""
 if [ -z "$*" ]; then
@@ -16,7 +17,7 @@ fi
 banner
 
 # Build containers
-echo "🔄 Spinning up containers."
+echo -e "\\n🔄 Spinning up containers."
 if [ -e "docker-custom.yml" ]; then
 	docker-compose -f docker-compose.yml -f docker-custom.yml up ${PARAMS} "$@"
 else

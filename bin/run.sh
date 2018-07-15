@@ -1,5 +1,8 @@
 #!/bin/bash
 
-# shellcheck source=bin/shared.sh
+# shellcheck source=src/shared.sh
+# shellcheck disable=SC1091
 source "$(dirname "$0")/shared.sh"
-run "$@"
+
+# drun: docker-compose run
+drun "$@"

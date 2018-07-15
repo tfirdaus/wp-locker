@@ -1,6 +1,14 @@
 #!/bin/bash
 
-echo "⛔️ This operation will remove the localhost containers, volumes, and the WordPress core files."
+# shellcheck source=src/shared.sh
+# shellcheck disable=SC1091
+source "$(dirname "$0")/shared.sh"
+
+# Show a fancy banner \o/
+banner
+
+echo -e "\\n⛔️ This operation will remove the localhost containers, volumes, and the WordPress core files."
+
 while true; do
     read -rp "Do you wish to proceed? [y/n]" yn
     case $yn in

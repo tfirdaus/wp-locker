@@ -1,25 +1,61 @@
 #!/bin/bash
 
-run() {
-    docker-compose exec -u www-data wordpress "$@"
+contains() {
+    local n=$#
+    local value=${!n}
+    for ((i=1;i < $#;i++)) {
+        if [ "${!i}" == "${value}" ]; then
+            echo "y"
+            return 0
+        fi
+    }
+    echo "n"
+    return 1
 }
 
-run_root() {
-	docker-compose exec wordpress "$@"
+# An alias command to run "docker-compose run".
+# Run a command in a new container as the www-data user.
+drun() {
+	read -r -a DOCKER_SERVICES <<< "$(docker-compose config --services)"
+
+	if [[ ! -z "$1" ]] && [[ $(contains "${DOCKER_SERVICES[@]}" "$1") == "y" ]]; then
+		docker-compose run -u www-data --rm "$1" "${@:2}"
+	else
+		docker-compose run -u www-data --rm wordpress "$@"
+	fi
+}
+
+# An alias command to run "docker-compose exec".
+# Run a command in a running container as the www-data user.
+dexec() {
+	read -r -a DOCKER_SERVICES <<< "$(docker-compose config --services)"
+
+	if [[ ! -z "$1" ]] && [[ $(contains "${DOCKER_SERVICES[@]}" "$1") == "y" ]]; then
+		docker-compose exec -u www-data "$1" "${@:2}"
+	else
+		docker-compose exec -u www-data wordpress "$@"
+	fi
 }
 
 ssh() {
-	docker-compose exec -u www-data wordpress sh
+	DOCKER_SERVICE=wordpress
+	if [[ ! -z "$1" ]]; then
+		DOCKER_SERVICE=$1
+	fi
+	docker-compose exec -u www-data "${DOCKER_SERVICE}" sh
 }
 
 ssh_root() {
-	docker-compose exec wordpress sh
+	DOCKER_SERVICE=wordpress
+	if [[ ! -z "$1" ]]; then
+		DOCKER_SERVICE=$1
+	fi
+	docker-compose exec "${DOCKER_SERVICE}" sh
 }
 
 banner() {
 	if [[ ${WP_LOCKER_BANNER:-1} -ge 1 ]]; then
 	cat <<-'EOF'
-
 	# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 	#    _       ______        __    ____  ________ __ __________   #
 	#   | |     / / __ \      / /   / __ \/ ____/ //_// ____/ __ \  #
@@ -29,7 +65,6 @@ banner() {
 	#                                                               #
 	#      Repository: https://github.com/tfirdaus/wp-locker        #
 	# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-
 	EOF
 	fi
 }
@@ -42,13 +77,13 @@ install_wp() {
 
 		IFS=',' read -ra WP_REPOS <<< "$2"
 		for WP_REPO in "${WP_REPOS[@]}"; do
-			if ! run wp $1 is-installed $WP_REPO && [[ "$1" = "plugin" ]]; then
+			if ! dexec wp "$1" is-installed "$WP_REPO" && [[ "$1" = "plugin" ]]; then
 				PLUGINS_INSTALLED+=("$WP_REPO")
 			elif [[ "$1" = "plugin" ]]; then
 				echo "⚠️ '${WP_REPO}' plugin already installed."
 			fi
 
-			if ! run wp $1 is-installed $WP_REPO && [[ "$1" = "theme" ]] && [[ -z $THEME_INSTALLED ]]; then
+			if ! dexec wp "$1" is-installed "$WP_REPO" && [[ "$1" = "theme" ]] && [[ -z $THEME_INSTALLED ]]; then
 				THEME_INSTALLED=$WP_REPO
 			elif [[ "$1" = "theme" ]]; then
 				echo "⚠️ '${WP_REPO}' theme already installed."
@@ -56,20 +91,17 @@ install_wp() {
 		done
 
 		if [[ ${PLUGINS_INSTALLED[*]} ]]; then
-			echo "🚥 Installing WordPress plugins..."
-			run wp plugin install "${PLUGINS_INSTALLED[@]}" --activate --allow-root
+			echo -e "\\n🚥 Installing WordPress plugins..."
+			dexec wp plugin install "${PLUGINS_INSTALLED[@]}" --activate --allow-root
 		fi
 
         if [[ "$1" = "theme" ]] && [[ ! -z $THEME_INSTALLED ]]; then
-            echo "🚥 Installing a WordPress theme..."
-			run wp theme install $THEME_INSTALLED --activate --allow-root
+            echo -e "\\n🚥 Installing a WordPress theme..."
+			dexec wp theme install "$THEME_INSTALLED" --activate --allow-root
 		fi
 	else
 		echo "⛔️ Usage: $0 <plugin|theme> <list-of-plugins|list-of-themes>"
 	fi
-
-	run wp plugin update --all --skip-plugins --skip-themes
-	run wp theme update --all --skip-plugins --skip-themes
 }
 
 install_git_repo() {
@@ -95,13 +127,13 @@ install_git_repo() {
 
 	IFS=',' read -ra repositories <<< "$GIT_REPOS"
 	for repo in "${repositories[@]}"; do
-		REPO_DIR=$(echo ${repo##*/} | cut -d':' -f2)
-		run mkdir -p ${REPO_DEST:-wp-content}/${REPO_DIR:-} # Ensure the directory is there.
-		if [[ "$(run ls -A ${REPO_DEST:-wp-content}/${REPO_DIR:-} 2>/dev/null)" ]]; then
+		REPO_DIR=$(echo "${repo##*/}" | cut -d':' -f2)
+		dexec mkdir -p "${REPO_DEST:-wp-content}/${REPO_DIR:-}" # Ensure the directory is there.
+		if [[ "$(dexec ls -A "${REPO_DEST:-wp-content}/${REPO_DIR:-}" 2>/dev/null)" ]]; then
 			echo "⚠️ The '${REPO_DEST:-wp-content}/${REPO_DIR:-}' directory is not empty; '${repo%:*}' repository might has been cloned."
 		else
 			echo "↙️ Cloning '${repo%:*}'..."
-			run bash -c "cd ${REPO_DEST:-wp-content} && \
+			dexec bash -c "cd ${REPO_DEST:-wp-content} && \
 			git clone --quiet --progress ${REPO_BASEURL:-https://github.com/}${repo%:*}.git ${REPO_DIR:-}"
 		fi
 	done
@@ -110,20 +142,18 @@ install_git_repo() {
 replace_urls() {
 	regex='(http|https)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
 	if [[ $1 =~ $regex ]]; then
-		SITEURL=$(run wp option get siteurl)
+		SITEURL=$(dexec wp option get siteurl)
 		SITEURL_ESC=$(echo -e "$SITEURL" | sed -e 's/[[:space:]]*$//' -e "s/'//g")
 	else
-		echo "⛔️ URL is not supplied or invalid."
+		echo -e "\\n⛔️ URL is not supplied or invalid."
 	fi
+
 	if [[ ! -z "$SITEURL_ESC" ]] && [[ "$1" != "$SITEURL_ESC" ]]; then
-		echo "🔄 Replacing the site URLs in the database to $1."
-		run wp search-replace "$SITEURL_ESC" "$1" --precise --recurse-objects --all-tables --skip-themes --skip-plugins
+		echo -e "\\n🔄 Replacing the site URLs in the database to $1."
+		dexec wp search-replace "$SITEURL_ESC" "$1" --precise --recurse-objects --all-tables --skip-themes --skip-plugins --skip-packages
+		echo "Your site URL: $1"
+	else
+		WP_SITE_URL="http://${WP_SITE_DOMAIN}:${WP_PUBLISHED_PORT}"
+		echo "Your site URL: ${WP_SITE_URL}${WP_SITE_SUBDIR}"
 	fi
-
-	echo "Your site URL: $1"
-}
-
-reset_permission() {
-	echo "🚥 Resetting owner & permission..."
-	run_root bash -c "chown www-data:www-data -R ./*"
 }
