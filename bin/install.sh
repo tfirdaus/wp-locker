@@ -4,7 +4,7 @@
 # Initialize a project (installing plugins, dependencies, and WordPress)
 # ======================================================================
 
-# shellcheck source=src/shared.sh
+# shellcheck source=bin/shared.sh
 # shellcheck disable=SC1091
 source "$(dirname "$0")/shared.sh"
 
