@@ -5,6 +5,7 @@ services:
     image: ${WP_IMAGE}
     depends_on:
       - database
+      - phpmyadmin
     restart: on-failure
     working_dir: ${WP_ROOT_DIR}
     ports:
