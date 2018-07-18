@@ -5,6 +5,7 @@ services:
     image: ${WP_IMAGE}
     depends_on:
       - database
+      - phpmyadmin
     restart: on-failure
     working_dir: ${WP_ROOT_DIR}
     ports:
@@ -25,7 +26,7 @@ services:
       - "./ssl/certs/wp-locker-key.pem:/etc/ssl/private/wp-locker-key.pem"
 
       # Custom bash scripts.
-      - "./bin/init.sh:/usr/local/bin/init.sh"
+      - "./bin/init-apache.sh:/usr/local/bin/init-apache.sh"
     environment:
       WORDPRESS_DB_HOST: ${DB_HOST}
       WORDPRESS_DB_NAME: ${DB_NAME}
@@ -33,7 +34,7 @@ services:
       WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
       APACHE_LOG_DIR: ${APACHE_LOG_DIR}
       APACHE_RUN_DIR: ${APACHE_LOG_DIR}
-    command: "bash -c init.sh"
+    command: "bash -c init-apache.sh"
 
   database:
     image: ${DB_IMAGE}

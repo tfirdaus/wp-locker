@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.3.0] - 2018-07-18
+
+### Added
+
+- Submodule [`tfirdaus/wp-shell-localhost`]: A new file, `exec.sh`, as an alias to run `docker-composer exec` CLI.
+
+### Changed
+
+- phpMyAdmin is now the WordPress container dependency. This will force Docker to bring the phpMyAdmin container up when we run docker-compose up only for the WordPress container.
+- The `bin` is now a submodule of [tfirdaus/wp-shell-localhost](https://github.com/tfirdaus/wp-shell-localhost)
+  - Use the `docker-compose exec` when checking `wp-config.php` is ready, since the container is already up and running.
+  - The `init.sh` to `init-apache.sh` to be more specific, as we might have several init scripts in the future to handle different services.
+  - The "WP-Locker" banner since we've now separated the Shell script into its own repository that might be shared with other projects.
+  - The `run.sh` file. The file is now included in [tfirdaus/wp-shell-pipelines](https://github.com/tfirdaus/wp-shell-pipelines) repository.
+
+### Fixed
+
+- Some shellcheck violations
+
 ## [0.2.0] - 2018-07-08
 
 ### Removed
@@ -56,6 +75,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Wrap the PMA port withing a quote as suggested in [https://docs.docker.com/compose/compose-file/#ports](https://docs.docker.com/compose/compose-file/#ports)
 - (Beta) status from the README
 
-[Unreleased]: https://github.com/tfirdaus/wp-locker/compare/v0.2.0...HEAD
-[0.1.1]: https://github.com/tfirdaus/wp-locker/compare/v0.1.0...v0.1.1
+[Unreleased]: https://github.com/tfirdaus/wp-locker/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/tfirdaus/wp-locker/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/tfirdaus/wp-locker/compare/v0.1.1...v0.2.0
+[0.1.1]: https://github.com/tfirdaus/wp-locker/compare/v0.1.0...v0.1.1
