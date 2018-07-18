@@ -1,3 +1,3 @@
 [submodule "bin"]
 	path = bin
-	url = git@github.com:tfirdaus/wp-bash-localhost.git
+	url = git@github.com:tfirdaus/wp-shell-localhost.git
