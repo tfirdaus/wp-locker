@@ -40,7 +40,7 @@ bash bin/down.sh
 To turn the container back up, simply run:
 
 ```shell
-bash bin/up.sh -d
+bash bin/up.sh -d wordpress
 ```
 
 You can browse the site again at `http://localhost:8082`, and be sure to check the **[Wiki page](https://github.com/tfirdaus/wp-locker/wiki)** for more usage and tutorials.
