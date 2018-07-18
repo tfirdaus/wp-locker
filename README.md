@@ -53,8 +53,8 @@ You can browse the site again at `http://localhost:8082`, and be sure to check t
 | --- | --- |
 | `bash bin/start.sh` | Starting the localhost with WordPress, the theme, and the plugins installed |
 | `bash bin/start.sh --https` | Starting the localhost to load with HTTPS; also install WordPress, theme, and plugins if it's not done so |
-| `bash bin/up.sh` | Build/rebuild the Docker image and spinning the localhost |
-| `bash bin/up.sh -d` | Spinning up the localhost in the background |
+| `bash bin/up.sh wordpress` | Build/rebuild the Docker image and spinning the localhost |
+| `bash bin/up.sh -d wordpress` | Spinning up the localhost in the background |
 | `bash bin/down.sh` | Shutting-down the container |
 | `bash bin/destroy.sh` | Shutting-down the container and remove everything |
 
