@@ -20,7 +20,8 @@ Follow the instruction below to get it up and running.
 Download or clone this repository.
 
 ```shell
-git clone -b master https://github.com/tfirdaus/wp-locker.git && cd wp-locker
+git clone -b master https://github.com/tfirdaus/wp-locker.git wp-locker && cd wp-locker
+git submodule update --init --recursive
 ```
 
 Theh above command will clone it to a new directory named `wp-locker` and change the directory to it.
